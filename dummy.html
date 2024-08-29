@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        #dd{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            justify-content: space-between;
+
+        }
+
+        #dd li{
+          list-style-type: none;
+          width:250px;
+          border:1px solid grey;
+          padding:10px;
+          border-radius: 10px;
+          display:flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2 id="h2"></h2>
+        <form id="form-container" autocomplete="off">
+            <input type="hidden" id="products-id" name="products-id"/>
+            <label for="title">TITLE:</label>
+            <input type="text" name="title" id="title"/> <br/>
+            <label for="thumbnail">THUMBNAIL:</label>
+            <input type="text" name="thumbnail" id="thumbnail"/> <br/>
+            <label for="price">PRICE:</label>
+            <input type="number" name="price" id="price"/> <br/>
+            <button type="submit">ADD</button>
+        </form>
+    </div>
+    <h2 id="total"></h2>
+    <ul id="dd"></ul>
+    <script>
+        let Products = []
+        const API = async () => {
+            let res = await fetch('https://dummyjson.com/products?limit=194')
+            let data = await res.json()
+            Products = data.products 
+            genUI(Products)
+        }
+
+        const genUI = (data) => {
+         let dd = document.getElementById('dd')
+         dd.innerHTML = ''
+         data.forEach((p,i) => {
+            let newLi = document.createElement('li')
+            newLi.innerHTML = p.title 
+            let newImg = document.createElement('img')
+            newImg.src = p.thumbnail
+            newImg.style.width = '100px'
+            newLi.appendChild(newImg)
+            let newH4 = document.createElement('h4')
+            newH4.innerHTML = p.price
+            newLi.appendChild(newH4)
+            let delbtn = document.createElement('button')
+            delbtn.innerHTML = 'DEL'
+            delbtn.onclick = () => deleteProduct(i)
+            newLi.appendChild(delbtn)
+            let editBtn = document.createElement('button')
+            editBtn.innerHTML = 'EDIT'
+            editBtn.onclick = () => editProduct(i)
+            newLi.appendChild(editBtn)
+            dd.appendChild(newLi)
+         })
+         document.getElementById('total').innerHTML = `there are of total ${data.length} Products`
+        }
+        API()
+
+        function deleteProduct(i){
+            Products.splice(i,1)
+            genUI(Products)
+        }
+
+        function editProduct(i){
+             document.getElementById('products-id').value = i;
+            document.getElementById('title').value = Products[i].title;
+             document.getElementById('thumbnail').value = Products[i].thumbnail;
+             document.getElementById('price').value = Products[i].price;
+             document.getElementById('h2').innerHTML = 'EDIT'
+
+        }
+
+        document.getElementById('form-container').addEventListener('submit',(e) => {
+            e.preventDefault()
+            const id = document.getElementById('products-id').value;
+            const title = document.getElementById('title').value;
+            const thumbnail = document.getElementById('thumbnail').value;
+            const price = document.getElementById('price').value;
+
+            if(Products[id]){
+                Products[id] = {...Products,title,thumbnail,price}
+            }else{
+                Products.push({title,thumbnail,price})
+            }
+            genUI(Products)
+            document.getElementById('products-id').value = "";
+            document.getElementById('form-container').reset()
+        })
+    </script>
+</body>
+</html>
