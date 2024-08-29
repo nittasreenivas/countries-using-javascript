@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>country Description</h1>
+        <div id="country-details"></div>
+        <button id="back">Back</button>
+    </div>
+    <script>
+        const getNameFromUrl = () => {
+            let URLParams = new URLSearchParams(window.location.search)
+            return URLParams.get('name')
+        }
+
+        const API = async (name) => {
+            let res = await fetch(`https://restcountries.com/v3.1/name/${name}`)
+            if(!res.ok){
+                document.getElementById('country-details').innerHTML = 'single country failed to fetch'
+                return
+            }
+            let data = await res.json()
+            DisplaySingleCountry(data[0])
+        }
+
+        const DisplaySingleCountry = async (data) => {
+           let newDiv = document.getElementById('country-details')
+           newDiv.innerHTML = `
+             <h1> ${data.name.common} </h1>
+             <img src="${data.flags.svg}" width="150px"/>
+             <h3> ${data.population} </h3>
+           `
+        }
+
+        const getName = getNameFromUrl()
+
+        if(getName){
+            API(getName)
+        }else{
+            document.getElementById('country-details').innerHTML = 'single country failed to fetch'
+
+        }
+
+        document.getElementById('back').addEventListener('click',() => {
+            window.location.href = 'index.html'
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        #dd{
+            display:flex;
+            flex-wrap:wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap:10px;
+        }
+        #dd li{
+            list-style-type: none;
+            width: 250px;
+            padding:10px;
+            border:1px solid grey;
+            border-radius: 15px;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h2 id="total"></h2>
+    <ul id="dd"></ul>
+    <script>
+        let Countries = []
+        const API = async () => {
+            let res = await fetch('https://restcountries.com/v3.1/all')
+            let data = await res.json()
+            Countries = data
+            genUI(Countries)
+        }
+       const genUI = (data) => {
+         let dd = document.getElementById('dd')
+         dd.innerHTML = ''
+         data.forEach((p) => {
+            let newLi = document.createElement('li')
+            newLi.innerHTML  = `<a href="countries.html?name=${p.name.common}">${p.name.common} </a> `
+            dd.appendChild(newLi)
+         })
+         document.getElementById('total').innerHTML = ` there are of total ${data.length} Countries`
+       }
+        API()
+    </script>
+</body>
+</html>
